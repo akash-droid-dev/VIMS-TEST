@@ -15,11 +15,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MOCK_VENUES, MOCK_PAYPLAY_SLOTS } from "@/lib/mock-data";
 import { formatDate, formatCurrency, gradeColor, gradeLabel, cn } from "@/lib/utils";
+import { setPayPlayState, getStore } from "@/lib/store";
 
 export default function PayPlayPage() {
-  const [venueStates, setVenueStates] = useState<Record<string, boolean>>(
-    Object.fromEntries(MOCK_VENUES.map((v) => [v.id, v.payplayEnabled]))
-  );
+  const [venueStates, setVenueStates] = useState<Record<string, boolean>>(() => {
+    const stored = typeof window !== "undefined" ? getStore().payplayStates : {};
+    return Object.fromEntries(MOCK_VENUES.map((v) => [v.id, stored[v.id] ?? v.payplayEnabled]));
+  });
   const [confirmDialog, setConfirmDialog] = useState<{ venueId: string; enable: boolean } | null>(null);
   const [confirmOtp, setConfirmOtp] = useState("");
   const [loading, setLoading] = useState(false);
@@ -35,6 +37,8 @@ export default function PayPlayPage() {
     if (!confirmDialog) return;
     setLoading(true);
     await new Promise((r) => setTimeout(r, 800));
+    // Write to shared store so public site sees the change in real-time
+    setPayPlayState(confirmDialog.venueId, confirmDialog.enable);
     setVenueStates((prev) => ({ ...prev, [confirmDialog.venueId]: confirmDialog.enable }));
     setConfirmDialog(null);
     setLoading(false);

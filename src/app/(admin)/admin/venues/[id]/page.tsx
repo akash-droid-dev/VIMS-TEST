@@ -16,6 +16,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { MOCK_VENUES, MOCK_BOOKINGS } from "@/lib/mock-data";
+import { setPayPlayState, getStore } from "@/lib/store";
 import {
   gradeColor, gradeLabel, lifecycleColor, formatDate, formatDateTime,
   complianceColor, venueTypeLabel, cn
@@ -34,7 +35,10 @@ export default function VenueDetailPage() {
   const { id } = useParams<{ id: string }>();
   const venue = MOCK_VENUES.find((v) => v.id === id) ?? MOCK_VENUES[0];
   const venueBookings = MOCK_BOOKINGS.filter((b) => b.venueId === venue.id);
-  const [payplayEnabled, setPayplayEnabled] = useState(venue.payplayEnabled);
+  const [payplayEnabled, setPayplayEnabled] = useState(() => {
+    if (typeof window !== "undefined") return getStore().payplayStates[venue.id] ?? venue.payplayEnabled;
+    return venue.payplayEnabled;
+  });
 
   const complianceScore = Math.round(
     (venue.complianceCertificates.filter((c) => c.state === "VALID").length /
@@ -513,7 +517,7 @@ export default function VenueDetailPage() {
                 </div>
                 <Switch
                   checked={payplayEnabled}
-                  onCheckedChange={setPayplayEnabled}
+                  onCheckedChange={(v) => { setPayplayEnabled(v); setPayPlayState(venue.id, v); }}
                   aria-label="Toggle Pay and Play"
                 />
               </div>

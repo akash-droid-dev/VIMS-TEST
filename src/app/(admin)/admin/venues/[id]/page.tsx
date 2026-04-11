@@ -46,7 +46,7 @@ export default function VenueDetailPage() {
     <div className="space-y-5">
       {/* Back + header */}
       <div className="flex items-start gap-4 flex-wrap">
-        <Link href="/venues">
+        <Link href="/admin/venues">
           <Button variant="ghost" size="sm" className="shrink-0">
             <ArrowLeft className="h-4 w-4" /> Venues
           </Button>
@@ -430,7 +430,7 @@ export default function VenueDetailPage() {
                   ) : (
                     <div className="space-y-3">
                       {venueBookings.map((booking) => (
-                        <Link key={booking.id} href={`/bookings/${booking.id}`}>
+                        <Link key={booking.id} href={`/admin/bookings/${booking.id}`}>
                           <div className="flex items-center gap-3 p-3 rounded-xl border border-slate-200 hover:border-blue-200 transition-colors cursor-pointer">
                             <div className="flex-1 min-w-0">
                               <p className="text-sm font-medium text-slate-900 truncate">{booking.eventName}</p>

@@ -127,7 +127,7 @@ export default function BookingsPage() {
               {pending.map((b) => {
                 const slah = b.slaDeadline ? slaHealth(b.slaDeadline) : "OK";
                 return (
-                  <Link key={b.id} href={`/bookings/${b.id}`}>
+                  <Link key={b.id} href={`/admin/bookings/${b.id}`}>
                     <div className="flex items-center gap-3 p-2 bg-white rounded-lg hover:shadow-sm transition-all cursor-pointer">
                       <div className="flex-1 min-w-0">
                         <p className="text-xs font-semibold text-slate-900 truncate">{b.eventName}</p>
@@ -213,7 +213,7 @@ export default function BookingsPage() {
                         ) : <span className="text-xs text-slate-400">—</span>}
                       </td>
                       <td className="px-4 py-3">
-                        <Link href={`/bookings/${booking.id}`}>
+                        <Link href={`/admin/bookings/${booking.id}`}>
                           <Button variant="ghost" size="sm" className="h-7 px-2 text-xs">
                             <ArrowUpRight className="h-3 w-3" />
                           </Button>

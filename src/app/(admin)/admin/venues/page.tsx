@@ -66,7 +66,7 @@ export default function VenuesPage() {
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm"><Download className="h-4 w-4" /> Export</Button>
-          <Link href="/venues/new">
+          <Link href="/admin/venues/new">
             <Button size="sm"><Plus className="h-4 w-4" /> New Venue</Button>
           </Link>
         </div>
@@ -244,7 +244,7 @@ export default function VenuesPage() {
 
                 {/* Actions */}
                 <div className="flex gap-2">
-                  <Link href={`/venues/${venue.id}`} className="flex-1">
+                  <Link href={`/admin/venues/${venue.id}`} className="flex-1">
                     <Button variant="outline" size="sm" className="w-full text-xs">
                       <Eye className="h-3 w-3" /> View
                     </Button>
@@ -315,7 +315,7 @@ export default function VenuesPage() {
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex gap-1">
-                          <Link href={`/venues/${venue.id}`}>
+                          <Link href={`/admin/venues/${venue.id}`}>
                             <Button variant="ghost" size="sm" className="h-7 px-2 text-xs">
                               <Eye className="h-3 w-3" />
                             </Button>

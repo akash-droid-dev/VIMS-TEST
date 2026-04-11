@@ -56,7 +56,7 @@ export default function BookingDetailPage() {
     <div className="space-y-5">
       {/* Header */}
       <div className="flex items-start gap-4 flex-wrap">
-        <Link href="/bookings">
+        <Link href="/admin/bookings">
           <Button variant="ghost" size="sm"><ArrowLeft className="h-4 w-4" /> Bookings</Button>
         </Link>
         <div className="flex-1 min-w-0">
@@ -390,7 +390,7 @@ export default function BookingDetailPage() {
                   <Badge variant="ghost">{venue.venueType.replace("_"," ")}</Badge>
                   <Badge variant={venue.lifecycleState === "ACTIVE" ? "success" : "warning"}>{venue.lifecycleState}</Badge>
                 </div>
-                <Link href={`/venues/${venue.id}`}>
+                <Link href={`/admin/venues/${venue.id}`}>
                   <Button variant="outline" size="sm" className="w-full mt-2 text-xs">
                     <Building2 className="h-3 w-3" /> View Venue Profile
                   </Button>

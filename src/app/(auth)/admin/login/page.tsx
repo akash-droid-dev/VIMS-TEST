@@ -33,7 +33,7 @@ export default function LoginPage() {
     // Store selected role in sessionStorage for demo
     sessionStorage.setItem("vims_user_tier", selectedRole);
     sessionStorage.setItem("vims_user_name", DEMO_ROLES.find((r) => r.tier === selectedRole)?.name ?? "Admin");
-    router.push("/dashboard");
+    router.push("/admin/dashboard");
   };
 
   const sendOtp = async () => {

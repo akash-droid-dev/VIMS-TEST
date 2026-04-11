@@ -190,13 +190,13 @@ export default function DashboardPage() {
                     <span className="text-[10px] text-slate-400">{booking.id}</span>
                   </div>
                 </div>
-                <Link href={`/bookings/${booking.id}`}>
+                <Link href={`/admin/bookings/${booking.id}`}>
                   <ChevronRight className="h-4 w-4 text-slate-400 hover:text-blue-800 transition-colors" />
                 </Link>
               </div>
             ))}
             <Separator />
-            <Link href="/bookings">
+            <Link href="/admin/bookings">
               <Button variant="ghost" size="sm" className="w-full text-xs text-blue-800">
                 View All Bookings <ArrowUpRight className="h-3 w-3" />
               </Button>
@@ -212,7 +212,7 @@ export default function DashboardPage() {
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle>Recent Venues</CardTitle>
-              <Link href="/venues">
+              <Link href="/admin/venues">
                 <Button variant="ghost" size="sm" className="text-xs text-blue-800">View all <ArrowUpRight className="h-3 w-3" /></Button>
               </Link>
             </div>
@@ -220,7 +220,7 @@ export default function DashboardPage() {
           <CardContent>
             <div className="space-y-2">
               {MOCK_VENUES.slice(0, 4).map((venue) => (
-                <Link key={venue.id} href={`/venues/${venue.id}`}>
+                <Link key={venue.id} href={`/admin/venues/${venue.id}`}>
                   <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-50 transition-colors cursor-pointer">
                     <div className="h-9 w-9 rounded-lg bg-blue-50 flex items-center justify-center text-lg flex-shrink-0">
                       {venue.venueType === "STADIUM" ? "🏟️" : venue.venueType === "SWIMMING_POOL" ? "🏊" : venue.venueType === "INDOOR_HALL" ? "🏸" : "⚽"}
@@ -249,7 +249,7 @@ export default function DashboardPage() {
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle>Compliance Alerts</CardTitle>
-              <Link href="/compliance">
+              <Link href="/admin/compliance">
                 <Button variant="ghost" size="sm" className="text-xs text-blue-800">View all <ArrowUpRight className="h-3 w-3" /></Button>
               </Link>
             </div>

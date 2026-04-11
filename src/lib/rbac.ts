@@ -138,15 +138,15 @@ export function canActivateVenue(tier: UserTier): boolean {
 
 export function getSidebarNav(tier: UserTier): NavItem[] {
   const all: NavItem[] = [
-    { label: "Dashboard", href: "/dashboard", icon: "LayoutDashboard", tiers: ["SUPER_ADMIN", "SPOC", "COMMISSIONERATE", "DSO", "DSC", "VENUE_MANAGER", "FIELD_OFFICER", "AUDITOR"] },
-    { label: "Venues", href: "/venues", icon: "Building2", tiers: ["SUPER_ADMIN", "SPOC", "COMMISSIONERATE", "DSO", "DSC", "VENUE_MANAGER", "FIELD_OFFICER"] },
-    { label: "Bookings", href: "/bookings", icon: "CalendarCheck", tiers: ["SUPER_ADMIN", "SPOC", "COMMISSIONERATE", "DSO", "DSC", "VENUE_MANAGER"] },
-    { label: "Pay & Play", href: "/payplay", icon: "Zap", tiers: ["SUPER_ADMIN", "SPOC", "DSO", "DSC"] },
-    { label: "Calendar", href: "/calendar", icon: "Calendar", tiers: ["SUPER_ADMIN", "SPOC", "DSO", "DSC", "VENUE_MANAGER"] },
-    { label: "Compliance", href: "/compliance", icon: "ShieldCheck", tiers: ["SUPER_ADMIN", "SPOC", "VENUE_MANAGER"] },
-    { label: "Audit Ledger", href: "/audit", icon: "FileSearch", tiers: ["SUPER_ADMIN", "SPOC", "COMMISSIONERATE", "AUDITOR"] },
-    { label: "Users", href: "/users", icon: "Users", tiers: ["SUPER_ADMIN", "SPOC"] },
-    { label: "Settings", href: "/settings", icon: "Settings", tiers: ["SUPER_ADMIN"] },
+    { label: "Dashboard", href: "/admin/dashboard", icon: "LayoutDashboard", tiers: ["SUPER_ADMIN", "SPOC", "COMMISSIONERATE", "DSO", "DSC", "VENUE_MANAGER", "FIELD_OFFICER", "AUDITOR"] },
+    { label: "Venues", href: "/admin/venues", icon: "Building2", tiers: ["SUPER_ADMIN", "SPOC", "COMMISSIONERATE", "DSO", "DSC", "VENUE_MANAGER", "FIELD_OFFICER"] },
+    { label: "Bookings", href: "/admin/bookings", icon: "CalendarCheck", tiers: ["SUPER_ADMIN", "SPOC", "COMMISSIONERATE", "DSO", "DSC", "VENUE_MANAGER"] },
+    { label: "Pay & Play", href: "/admin/payplay", icon: "Zap", tiers: ["SUPER_ADMIN", "SPOC", "DSO", "DSC"] },
+    { label: "Calendar", href: "/admin/calendar", icon: "Calendar", tiers: ["SUPER_ADMIN", "SPOC", "DSO", "DSC", "VENUE_MANAGER"] },
+    { label: "Compliance", href: "/admin/compliance", icon: "ShieldCheck", tiers: ["SUPER_ADMIN", "SPOC", "VENUE_MANAGER"] },
+    { label: "Audit Ledger", href: "/admin/audit", icon: "FileSearch", tiers: ["SUPER_ADMIN", "SPOC", "COMMISSIONERATE", "AUDITOR"] },
+    { label: "Users", href: "/admin/users", icon: "Users", tiers: ["SUPER_ADMIN", "SPOC"] },
+    { label: "Settings", href: "/admin/settings", icon: "Settings", tiers: ["SUPER_ADMIN"] },
   ];
   return all.filter((item) => (item.tiers as string[]).includes(tier));
 }

@@ -23,7 +23,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const navItems = getSidebarNav(userTier).map((item) => ({
     ...item,
     badge:
-      item.href === "/bookings"
+      item.href === "/admin/bookings"
         ? MOCK_BOOKINGS.filter((b) => b.state === "SUBMITTED" || b.state === "UNDER_REVIEW").length
         : undefined,
   }));

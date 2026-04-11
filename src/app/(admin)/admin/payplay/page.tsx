@@ -175,7 +175,7 @@ export default function PayPlayPage() {
                         </div>
                       </td>
                       <td className="px-4 py-3">
-                        <Link href={`/venues/${venue.id}`}>
+                        <Link href={`/admin/venues/${venue.id}`}>
                           <Button variant="ghost" size="sm" className="h-7 px-2 text-xs">
                             <Eye className="h-3 w-3" />
                           </Button>

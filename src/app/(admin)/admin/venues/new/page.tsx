@@ -67,7 +67,7 @@ export default function NewVenuePage() {
     <div className="max-w-3xl mx-auto space-y-5">
       {/* Header */}
       <div className="flex items-center gap-4">
-        <Link href="/venues">
+        <Link href="/admin/venues">
           <Button variant="ghost" size="sm"><ArrowLeft className="h-4 w-4" /> Back</Button>
         </Link>
         <div>

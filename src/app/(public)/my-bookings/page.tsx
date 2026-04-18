@@ -290,7 +290,7 @@ export default function MyBookingsPage() {
                         {booking.rated && (
                           <div className="flex items-center gap-0.5">
                             {[1, 2, 3, 4, 5].map((s) => (
-                              <Star key={s} className={cn("h-3 w-3", s <= booking.rated! ? "text-orange-400 fill-orange-400" : "text-slate-200")} />
+                              <Star key={s} className={cn("h-3 w-3", s <= booking.rated! ? "text-orange-400 fill-orange-400" : "text-slate-300")} />
                             ))}
                           </div>
                         )}
@@ -338,7 +338,7 @@ export default function MyBookingsPage() {
                 >
                   <Star className={cn(
                     "h-8 w-8 transition-colors",
-                    s <= (hoverRating || givenRating) ? "text-orange-400 fill-orange-400" : "text-slate-200"
+                    s <= (hoverRating || givenRating) ? "text-orange-400 fill-orange-400" : "text-slate-300"
                   )} />
                 </button>
               ))}

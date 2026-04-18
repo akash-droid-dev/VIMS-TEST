@@ -29,7 +29,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }));
 
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-50">
+    <div className="flex h-screen overflow-hidden bg-[#f8faff]">
       <Sidebar
         navItems={navItems}
         user={{ name: userName, tier: userTier, email: "admin@sag.guj.gov.in" }}

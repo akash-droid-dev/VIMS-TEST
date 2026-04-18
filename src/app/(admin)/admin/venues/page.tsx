@@ -24,12 +24,16 @@ const LIFECYCLE_OPTIONS: VenueLifecycleState[] = [
   "PROPOSED", "UNDER_REVIEW", "ACTIVE", "SUSPENDED", "REVOKED",
 ];
 
-const DISTRICT_OPTIONS = ["All Districts", "AHM", "SRT", "VDO", "RJK", "GAN", "BHV"];
+const DISTRICT_OPTIONS = [
+  "All States", "Gujarat", "Maharashtra", "Delhi", "Karnataka",
+  "Tamil Nadu", "Rajasthan", "West Bengal", "Uttar Pradesh",
+  "Madhya Pradesh", "Telangana", "Kerala", "Punjab", "Haryana",
+];
 
 export default function VenuesPage() {
   const [search, setSearch] = useState("");
   const [filterState, setFilterState] = useState("ALL");
-  const [filterDistrict, setFilterDistrict] = useState("All Districts");
+  const [filterDistrict, setFilterDistrict] = useState("All States");
   const [view, setView] = useState<"card" | "table">("card");
   const [filterPayPlay, setFilterPayPlay] = useState("ALL");
 
@@ -42,7 +46,7 @@ export default function VenuesPage() {
         v.primarySport.toLowerCase().includes(search.toLowerCase()) ||
         v.owningBody.toLowerCase().includes(search.toLowerCase());
       const matchState = filterState === "ALL" || v.lifecycleState === filterState;
-      const matchDistrict = filterDistrict === "All Districts" || v.lgdDistrictCode === filterDistrict;
+      const matchDistrict = filterDistrict === "All States" || v.fullAddress.toLowerCase().includes(filterDistrict.toLowerCase());
       const matchPayPlay =
         filterPayPlay === "ALL" ||
         (filterPayPlay === "ENABLED" && v.payplayEnabled) ||
@@ -111,7 +115,7 @@ export default function VenuesPage() {
         </div>
         <Select value={filterDistrict} onValueChange={setFilterDistrict}>
           <SelectTrigger className="w-36 h-8 text-sm">
-            <SelectValue placeholder="District" />
+            <SelectValue placeholder="State" />
           </SelectTrigger>
           <SelectContent>
             {DISTRICT_OPTIONS.map((d) => <SelectItem key={d} value={d}>{d}</SelectItem>)}

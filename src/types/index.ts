@@ -20,6 +20,7 @@ export type VenueType =
   | "SHOOTING_RANGE"
   | "ATHLETICS_TRACK"
   | "MULTIPURPOSE"
+  | "MULTI_SPORT_COMPLEX"
   | "GROUND"
   | "ACADEMY"
   | "WELLNESS_CENTRE";
@@ -31,6 +32,7 @@ export type OwnershipType =
   | "PSU"
   | "EDUCATIONAL"
   | "FEDERATION"
+  | "ASSOCIATION"
   | "ULB"
   | "PANCHAYAT";
 
@@ -52,6 +54,9 @@ export type SubVenueType =
   | "PITCH"
   | "POOL"
   | "TRACK"
+  | "GYM"
+  | "RANGE"
+  | "CONFERENCE_ROOM"
   | "MEETING_ROOM"
   | "CHANGING_ROOM";
 
@@ -217,6 +222,8 @@ export interface Venue {
   kyvStep: KYVStep;
   kyvProgress: number;
   mediaGallery?: string[];
+  images?: string[];          // ordered: [hero, gallery1, gallery2, ...]
+  layoutImageUrl?: string;    // venue floor plan / layout diagram
   shortHistory?: string;
   createdAt: string;
   updatedAt: string;

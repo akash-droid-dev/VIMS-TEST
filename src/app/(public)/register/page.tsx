@@ -7,6 +7,7 @@ import {
   Shield, ArrowRight, ChevronLeft, Loader2, AlertCircle
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { registerCitizen } from "@/lib/store";
 
 type Step = "details" | "otp" | "password" | "done";
 
@@ -100,6 +101,13 @@ export default function RegisterPage() {
     }
     setLoading(true);
     await new Promise((r) => setTimeout(r, 1400));
+    registerCitizen({
+      name: form.fullName,
+      mobile: form.mobile,
+      email: form.email,
+      district: form.district,
+      sportsInterests: form.sportsInterests,
+    });
     setLoading(false);
     setStep("done");
   };

@@ -9,9 +9,12 @@ import {
   Car, Camera, Accessibility
 } from "lucide-react";
 import { MOCK_VENUES, MOCK_PAYPLAY_SLOTS } from "@/lib/mock-data";
+import { VenueCarousel } from "@/components/ui/venue-carousel";
+import { getVenueImages } from "@/lib/venue-images";
 import { gradeColor, gradeLabel, formatDate, formatCurrency, cn, getSportEmoji, venueTypeLabel } from "@/lib/utils";
 import { useVIMSStore } from "@/hooks/useVIMSStore";
 import { toggleSavedVenue, trackRecentlyViewed } from "@/lib/store";
+import { useInView, staggerStyle, fadeInStyle } from "@/hooks/useScrollAnimation";
 
 const DAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
@@ -61,7 +64,7 @@ export default function PublicVenueDetailPage() {
   const venue = MOCK_VENUES.find((v) => v.id === id) ?? MOCK_VENUES[1];
   const payplayEnabled = store.payplayStates[venue.id] ?? venue.payplayEnabled;
 
-  const [activeTab, setActiveTab] = useState<"overview" | "slots" | "sub-venues" | "reviews">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "slots" | "sub-venues" | "reviews" | "map">("overview");
   const [selectedDayIdx, setSelectedDayIdx] = useState(0);
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [selectedSubVenue, setSelectedSubVenue] = useState(venue.subVenues[0]?.id ?? "");
@@ -69,6 +72,8 @@ export default function PublicVenueDetailPage() {
   const [shareMsg, setShareMsg] = useState("");
 
   const days = buildNextDays(7);
+  const { ref: infoRef, inView: infoIn } = useInView(0.05);
+  const { ref: tabRef, inView: tabIn } = useInView(0.05);
 
   useEffect(() => {
     trackRecentlyViewed(venue.id);
@@ -100,69 +105,87 @@ export default function PublicVenueDetailPage() {
   }));
   const totalReviews = ratingBreakdown.reduce((s, r) => s + r.count, 0);
 
-  return (
-    <div>
-      {/* ── Hero image area ──────────────────────────────────── */}
-      <div className={cn("relative h-64 md:h-80 bg-gradient-to-br overflow-hidden", sportGradient(venue.primarySport))}>
-        {/* Pattern overlay */}
-        <div className="absolute inset-0 opacity-10" style={{
-          backgroundImage: "radial-gradient(circle at 2px 2px, white 1px, transparent 0)",
-          backgroundSize: "32px 32px"
-        }} />
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-9xl opacity-20 select-none">{getSportEmoji(venue.primarySport)}</span>
-        </div>
-        {/* Gradient overlay bottom */}
-        <div className="absolute bottom-0 inset-x-0 h-32 bg-gradient-to-t from-black/60 to-transparent" />
-
-        {/* Top buttons */}
-        <div className="absolute top-4 left-4">
-          <Link href="/venues" className="inline-flex items-center gap-1.5 bg-black/30 backdrop-blur-sm text-white text-sm font-medium px-3 py-1.5 rounded-full hover:bg-black/50 transition-colors">
-            <ArrowLeft className="h-3.5 w-3.5" /> All Venues
-          </Link>
-        </div>
-        <div className="absolute top-4 right-4 flex gap-2">
-          <button
-            onClick={handleSave}
-            className={cn("h-9 w-9 rounded-full backdrop-blur-sm flex items-center justify-center shadow transition-colors", saved ? "bg-red-500 text-white" : "bg-black/30 text-white hover:bg-black/50")}
-          >
-            <Heart className={cn("h-4 w-4", saved ? "fill-white" : "")} />
-          </button>
-          <button onClick={handleShare} className="relative h-9 w-9 rounded-full bg-black/30 backdrop-blur-sm text-white flex items-center justify-center shadow hover:bg-black/50 transition-colors">
-            <Share2 className="h-4 w-4" />
-            {shareMsg && (
-              <span className="absolute -bottom-7 right-0 text-xs bg-black text-white px-2 py-1 rounded-lg whitespace-nowrap">{shareMsg}</span>
-            )}
-          </button>
-        </div>
-
-        {/* Bottom info overlay */}
-        <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between">
-          <div>
-            <div className="flex gap-2 mb-2 flex-wrap">
-              <span className={cn("text-xs font-bold px-2.5 py-0.5 rounded-full border backdrop-blur-sm bg-white/90", gradeColor(venue.grade))}>
-                Grade {gradeLabel(venue.grade)}
-              </span>
-              {payplayEnabled && (
-                <span className="flex items-center gap-1 text-xs font-bold px-2.5 py-0.5 rounded-full bg-purple-600 text-white">
-                  <Zap className="h-3 w-3" /> Instant Booking
-                </span>
-              )}
-              <span className="text-xs px-2.5 py-0.5 rounded-full bg-white/20 backdrop-blur-sm text-white border border-white/30">
-                {venue.indoorOutdoor === "INDOOR" ? "Indoor" : venue.indoorOutdoor === "OUTDOOR" ? "Outdoor" : "Mixed"}
-              </span>
-            </div>
-            <h1 className="text-xl md:text-2xl font-extrabold text-white drop-shadow-sm">{venue.nameEn}</h1>
-            <p className="text-white/70 text-sm">{venue.nameGu}</p>
-          </div>
-          <span className="text-xs text-white/60 hidden sm:block">📸 12 photos</span>
-        </div>
+  if (!id) {
+    return (
+      <div className="min-h-screen bg-[#f8faff] flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-blue-600/30 border-t-blue-600 rounded-full animate-spin" />
       </div>
+    );
+  }
+
+  return (
+    <div key={id} className="animate-pocket-reveal">
+      {/* ── Hero image carousel ───────────────────────────────── */}
+      {(() => {
+        const imgs = getVenueImages(venue.id, venue.images ?? []);
+        const heroContent = (
+          <>
+            {/* Top buttons */}
+            <div className="absolute top-4 left-4 z-10">
+              <Link href="/venues" className="inline-flex items-center gap-1.5 bg-black/30 backdrop-blur-sm text-white text-sm font-medium px-3 py-1.5 rounded-full hover:bg-black/50 transition-colors">
+                <ArrowLeft className="h-3.5 w-3.5" /> All Venues
+              </Link>
+            </div>
+            <div className="absolute top-4 right-12 flex gap-2 z-10">
+              <button
+                onClick={handleSave}
+                className={cn("h-9 w-9 rounded-full backdrop-blur-sm flex items-center justify-center shadow transition-colors", saved ? "bg-red-500 text-white" : "bg-black/30 text-white hover:bg-black/50")}
+              >
+                <Heart className={cn("h-4 w-4", saved ? "fill-white" : "")} />
+              </button>
+              <button onClick={handleShare} className="relative h-9 w-9 rounded-full bg-black/30 backdrop-blur-sm text-white flex items-center justify-center shadow hover:bg-black/50 transition-colors">
+                <Share2 className="h-4 w-4" />
+                {shareMsg && (
+                  <span className="absolute -bottom-7 right-0 text-xs bg-black text-white px-2 py-1 rounded-lg whitespace-nowrap">{shareMsg}</span>
+                )}
+              </button>
+            </div>
+            {/* Bottom info overlay */}
+            <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between z-10">
+              <div>
+                <div className="flex gap-2 mb-2 flex-wrap">
+                  <span className={cn("text-xs font-bold px-2.5 py-0.5 rounded-full border backdrop-blur-sm bg-white/90", gradeColor(venue.grade))}>
+                    Grade {gradeLabel(venue.grade)}
+                  </span>
+                  {payplayEnabled && (
+                    <span className="flex items-center gap-1 text-xs font-bold px-2.5 py-0.5 rounded-full bg-purple-600 text-white">
+                      <Zap className="h-3 w-3" /> Instant Booking
+                    </span>
+                  )}
+                  <span className="text-xs px-2.5 py-0.5 rounded-full bg-white/20 backdrop-blur-sm text-white border border-white/30">
+                    {venue.indoorOutdoor === "INDOOR" ? "Indoor" : venue.indoorOutdoor === "OUTDOOR" ? "Outdoor" : "Mixed"}
+                  </span>
+                </div>
+                <h1 className="text-xl md:text-2xl font-extrabold text-white drop-shadow-sm">{venue.nameEn}</h1>
+                <p className="text-white/70 text-sm">{venue.nameGu}</p>
+              </div>
+            </div>
+          </>
+        );
+
+        return imgs.length > 0 ? (
+          <VenueCarousel images={imgs} className="h-64 md:h-80 bg-slate-900">
+            {heroContent}
+          </VenueCarousel>
+        ) : (
+          <div className={cn("relative h-64 md:h-80 overflow-hidden", cn("bg-gradient-to-br", sportGradient(venue.primarySport)))}>
+            <div className="absolute inset-0 opacity-10" style={{
+              backgroundImage: "radial-gradient(circle at 2px 2px, white 1px, transparent 0)",
+              backgroundSize: "32px 32px"
+            }} />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="text-9xl opacity-20 select-none">{getSportEmoji(venue.primarySport)}</span>
+            </div>
+            <div className="absolute bottom-0 inset-x-0 h-32 bg-gradient-to-t from-black/60 to-transparent" />
+            {heroContent}
+          </div>
+        );
+      })()}
 
       {/* ── Main layout ───────────────────────────────────────── */}
       <div className="max-w-6xl mx-auto px-4 py-6">
         {/* Breadcrumb */}
-        <nav className="flex items-center gap-1.5 text-xs text-slate-400 mb-5">
+        <nav className="flex items-center gap-1.5 text-xs text-slate-400 mb-5 animate-[fadeSlideUp_0.4s_ease-out_both]">
           <Link href="/venues" className="hover:text-blue-700 transition-colors">Venues</Link>
           <ChevronRight className="h-3 w-3" />
           <span>{venue.lgdDistrictCode}</span>
@@ -170,9 +193,9 @@ export default function PublicVenueDetailPage() {
           <span className="text-slate-700 font-medium truncate">{venue.nameEn}</span>
         </nav>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div ref={infoRef} className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* ── Left column ─────────────────────────────────── */}
-          <div className="lg:col-span-2 space-y-0">
+          <div className="lg:col-span-2 space-y-0" style={fadeInStyle(infoIn, 0)}>
             {/* Rating + quick info */}
             <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm mb-4">
               <div className="flex items-start justify-between gap-4 flex-wrap mb-3">
@@ -212,7 +235,7 @@ export default function PublicVenueDetailPage() {
             {/* Tabs */}
             <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
               <div className="flex border-b border-slate-200 overflow-x-auto">
-                {(["overview", "slots", "sub-venues", "reviews"] as const).map((tab) => (
+                {(["overview", "slots", "sub-venues", "reviews", "map"] as const).map((tab) => (
                   <button
                     key={tab}
                     onClick={() => setActiveTab(tab)}
@@ -223,7 +246,7 @@ export default function PublicVenueDetailPage() {
                         : "border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50"
                     )}
                   >
-                    {tab === "sub-venues" ? "Sub-Venues" : tab === "slots" ? (
+                    {tab === "map" ? "Map" : tab === "sub-venues" ? "Sub-Venues" : tab === "slots" ? (
                       <span className="flex items-center gap-1.5">
                         Slots
                         {payplayEnabled && <span className="text-[10px] bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded-full font-bold">Live</span>}
@@ -286,17 +309,35 @@ export default function PublicVenueDetailPage() {
                     </div>
 
                     <div>
-                      <h3 className="font-bold text-slate-900 mb-3">Location &amp; Access</h3>
-                      <div className="rounded-2xl bg-gradient-to-br from-slate-100 to-blue-50 border border-slate-200 h-36 flex flex-col items-center justify-center gap-2 text-slate-500 text-sm">
-                        <MapPin className="h-7 w-7 text-blue-400" />
-                        <span className="font-medium text-slate-700">{venue.fullAddress}</span>
-                        <a href={`https://maps.google.com?q=${venue.coordinates.lat},${venue.coordinates.lng}`} target="_blank" rel="noopener noreferrer"
-                          className="flex items-center gap-1 text-xs text-blue-600 hover:underline font-medium">
-                          Open in Google Maps <ExternalLink className="h-3 w-3" />
-                        </a>
+                      <div className="flex items-center justify-between mb-3">
+                        <h3 className="font-bold text-slate-900">Location &amp; Access</h3>
+                        <div className="flex gap-3">
+                          <a href={`https://maps.google.com?q=${venue.coordinates.lat},${venue.coordinates.lng}`} target="_blank" rel="noopener noreferrer"
+                            className="flex items-center gap-1 text-xs text-blue-600 hover:underline font-medium">
+                            Google Maps <ExternalLink className="h-3 w-3" />
+                          </a>
+                          <button onClick={() => setActiveTab("map")} className="flex items-center gap-1 text-xs text-slate-500 hover:text-blue-600 font-medium transition-colors">
+                            Full map <ChevronRight className="h-3 w-3" />
+                          </button>
+                        </div>
                       </div>
+                      <div className="rounded-2xl overflow-hidden border border-slate-200 shadow-sm">
+                        <iframe
+                          title={`Map — ${venue.nameEn}`}
+                          src={`https://www.openstreetmap.org/export/embed.html?bbox=${(venue.coordinates.lng - 0.012).toFixed(6)}%2C${(venue.coordinates.lat - 0.009).toFixed(6)}%2C${(venue.coordinates.lng + 0.012).toFixed(6)}%2C${(venue.coordinates.lat + 0.009).toFixed(6)}&layer=mapnik&marker=${venue.coordinates.lat}%2C${venue.coordinates.lng}`}
+                          width="100%"
+                          height="220"
+                          style={{ border: 0 }}
+                          loading="lazy"
+                          referrerPolicy="no-referrer-when-downgrade"
+                        />
+                      </div>
+                      <p className="text-xs text-slate-500 mt-2 flex items-start gap-1">
+                        <MapPin className="h-3.5 w-3.5 text-blue-400 shrink-0 mt-0.5" />
+                        {venue.fullAddress}
+                      </p>
                       {venue.nearestTransit && (
-                        <p className="text-xs text-slate-500 mt-2 flex items-start gap-1">
+                        <p className="text-xs text-slate-500 mt-1 flex items-start gap-1">
                           <Info className="h-3.5 w-3.5 text-blue-400 shrink-0 mt-0.5" />
                           Nearest transit: {venue.nearestTransit}
                         </p>
@@ -499,7 +540,7 @@ export default function PublicVenueDetailPage() {
                         <div className="text-5xl font-extrabold text-slate-900">{venue.communityRating}</div>
                         <div className="flex justify-center mt-1">
                           {[1,2,3,4,5].map((i) => (
-                            <Star key={i} className={cn("h-4 w-4", i <= Math.round(venue.communityRating) ? "text-amber-400 fill-current" : "text-slate-200")} />
+                            <Star key={i} className={cn("h-4 w-4", i <= Math.round(venue.communityRating) ? "text-amber-400 fill-current" : "text-slate-200/50")} />
                           ))}
                         </div>
                         <div className="text-xs text-slate-500 mt-1">{totalReviews} reviews</div>
@@ -531,7 +572,7 @@ export default function PublicVenueDetailPage() {
                               <span className="font-semibold text-slate-900 text-sm">{review.name}</span>
                               <div className="flex">
                                 {[1,2,3,4,5].map((i) => (
-                                  <Star key={i} className={cn("h-3 w-3", i <= review.rating ? "text-amber-400 fill-current" : "text-slate-200")} />
+                                  <Star key={i} className={cn("h-3 w-3", i <= review.rating ? "text-amber-400 fill-current" : "text-slate-300")} />
                                 ))}
                               </div>
                               <span className="text-xs text-slate-400">{review.date}</span>
@@ -543,12 +584,75 @@ export default function PublicVenueDetailPage() {
                     </div>
                   </div>
                 )}
+
+                {/* ── Map tab ── */}
+                {activeTab === "map" && (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-bold text-slate-900">Venue Location</h3>
+                      <div className="flex gap-3">
+                        <a
+                          href={`https://maps.google.com?q=${venue.coordinates.lat},${venue.coordinates.lng}`}
+                          target="_blank" rel="noopener noreferrer"
+                          className="flex items-center gap-1 text-xs text-blue-600 hover:underline font-medium"
+                        >
+                          Google Maps <ExternalLink className="h-3 w-3" />
+                        </a>
+                        <a
+                          href={`https://www.openstreetmap.org/?mlat=${venue.coordinates.lat}&mlon=${venue.coordinates.lng}#map=17/${venue.coordinates.lat}/${venue.coordinates.lng}`}
+                          target="_blank" rel="noopener noreferrer"
+                          className="flex items-center gap-1 text-xs text-slate-500 hover:underline font-medium"
+                        >
+                          OpenStreetMap <ExternalLink className="h-3 w-3" />
+                        </a>
+                      </div>
+                    </div>
+
+                    <div className="rounded-2xl overflow-hidden border border-slate-200 shadow-sm">
+                      <iframe
+                        title={`Full Map — ${venue.nameEn}`}
+                        src={`https://www.openstreetmap.org/export/embed.html?bbox=${(venue.coordinates.lng - 0.008).toFixed(6)}%2C${(venue.coordinates.lat - 0.006).toFixed(6)}%2C${(venue.coordinates.lng + 0.008).toFixed(6)}%2C${(venue.coordinates.lat + 0.006).toFixed(6)}&layer=mapnik&marker=${venue.coordinates.lat}%2C${venue.coordinates.lng}`}
+                        width="100%"
+                        height="460"
+                        style={{ border: 0 }}
+                        loading="lazy"
+                        referrerPolicy="no-referrer-when-downgrade"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-1">Full Address</p>
+                        <p className="text-sm text-slate-800">{venue.fullAddress}</p>
+                      </div>
+                      <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-1">Coordinates</p>
+                        <p className="text-sm text-slate-800 font-mono">{venue.coordinates.lat}° N</p>
+                        <p className="text-sm text-slate-800 font-mono">{venue.coordinates.lng}° E</p>
+                      </div>
+                      {venue.nearestTransit && (
+                        <div className="p-3 bg-blue-50 rounded-xl border border-blue-100 sm:col-span-2">
+                          <p className="text-[10px] font-bold text-blue-500 uppercase tracking-wide mb-1">Nearest Transit</p>
+                          <p className="text-sm text-blue-800">{venue.nearestTransit}</p>
+                        </div>
+                      )}
+                      <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-1">Entry Gates</p>
+                        <p className="text-sm text-slate-800">{venue.entryGatesCount} gates</p>
+                      </div>
+                      <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-1">Parking</p>
+                        <p className="text-sm text-slate-800">{venue.parkingCapacity.toLocaleString("en-IN")} spots</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
 
           {/* ── Right column — sticky booking sidebar ─────────── */}
-          <div>
+          <div style={fadeInStyle(infoIn, 150)}>
             <div className="sticky top-20 space-y-4">
               {payplayEnabled ? (
                 <div className="bg-white rounded-2xl border border-slate-200 shadow-lg p-5">
@@ -606,6 +710,40 @@ export default function PublicVenueDetailPage() {
                   </a>
                 </div>
               )}
+
+              {/* Apply for Event — prominent CTA */}
+              <div className="rounded-2xl overflow-hidden border border-indigo-100 shadow-md"
+                style={{ background: "linear-gradient(135deg, #eef2ff 0%, #f0fdf4 100%)" }}
+              >
+                <div className="p-5">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-indigo-600 to-blue-600 flex items-center justify-center shadow-md shadow-indigo-500/20">
+                      <Calendar className="h-4.5 w-4.5 text-white" />
+                    </div>
+                    <div>
+                      <p className="font-black text-slate-900 text-sm">Book for an Event</p>
+                      <p className="text-[11px] text-indigo-600 font-medium">Tournament · Corporate · Cultural</p>
+                    </div>
+                  </div>
+                  <p className="text-xs text-slate-500 mb-4 leading-relaxed">
+                    Apply for multi-day bookings, tournaments, state events, or corporate activations via the official Government track.
+                  </p>
+                  <Link
+                    href={`/venues/${venue.id}/book`}
+                    className="flex items-center justify-center gap-2 w-full py-3 rounded-xl font-bold text-sm transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5"
+                    style={{ background: "linear-gradient(135deg, #4f46e5 0%, #2563eb 100%)", color: "#fff" }}
+                  >
+                    <ExternalLink className="h-4 w-4" /> Apply for Booking
+                  </Link>
+                  <div className="flex items-center gap-4 mt-3 justify-center">
+                    {["Free apply","14-day SLA","Digital receipt"].map((f) => (
+                      <span key={f} className="flex items-center gap-1 text-[10px] text-slate-500">
+                        <CheckCircle2 className="h-3 w-3 text-emerald-500" /> {f}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
 
               {/* Quick info card */}
               <div className="bg-white rounded-2xl border border-slate-200 p-4 space-y-3">

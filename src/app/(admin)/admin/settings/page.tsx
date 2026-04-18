@@ -43,7 +43,7 @@ export default function SettingsPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <Label>Platform Name</Label>
-                  <Input defaultValue="G-VIMS Gujarat" />
+                  <Input defaultValue="I-VIMS India" />
                 </div>
                 <div className="space-y-1.5">
                   <Label>Platform Version</Label>
@@ -179,7 +179,7 @@ export default function SettingsPage() {
               {[
                 { name: "UIDAI Aadhaar OTP", status: "Connected", color: "success" as const, desc: "Citizen identity verification" },
                 { name: "NIC e-Sign API", status: "Connected", color: "success" as const, desc: "Digital signature for approvals" },
-                { name: "Digital Gujarat SSO", status: "Connected", color: "success" as const, desc: "Official staff authentication" },
+                { name: "Digital India SSO", status: "Connected", color: "success" as const, desc: "Official staff authentication" },
                 { name: "Razorpay Payment Gateway", status: "Connected", color: "success" as const, desc: "Commercial & P&P payments" },
                 { name: "PFMS / Bharat Kosh", status: "Configured", color: "warning" as const, desc: "Government payment integration" },
                 { name: "DigiLocker", status: "Connected", color: "success" as const, desc: "Compliance document vault" },

@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "I-VIMS — India Venue & Infrastructure Management System",
+  title: "VIMS — India Venue & Infrastructure Management System",
   description: "India's national sports venue platform — unified venue management, booking, and Pay & Play for Sports Authority of India.",
   keywords: ["VIMS", "India Sports", "venue management", "SAI", "Khelo India", "booking"],
 };

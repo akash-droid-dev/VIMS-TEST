@@ -94,7 +94,7 @@ export default function AboutPage() {
             </span>
           </h1>
           <p style={fadeInStyle(heroIn, 200)} className="text-blue-200 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
-            I-VIMS — the India Venue &amp; Infrastructure Management System — is the Government of India's unified digital platform for discovering, booking, and managing all government-owned sports venues across 36 states &amp; UTs.
+            VIMS — the India Venue &amp; Infrastructure Management System — is the Government of India's unified digital platform for discovering, booking, and managing all government-owned sports venues across 36 states &amp; UTs.
           </p>
           <div style={fadeInStyle(heroIn, 300)} className="flex flex-wrap justify-center gap-4 mt-8">
             <Link href="/venues" className="flex items-center gap-2 px-6 py-3 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-semibold text-sm transition-all shadow-lg hover:-translate-y-0.5">

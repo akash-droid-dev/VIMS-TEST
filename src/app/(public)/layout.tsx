@@ -76,7 +76,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
               </div>
             </div>
             <div className="hidden sm:block">
-              <div className="text-base font-black text-slate-900 leading-tight tracking-tight">I-VIMS</div>
+              <div className="text-base font-black text-slate-900 leading-tight tracking-tight">VIMS</div>
               <div className="text-[10px] text-slate-400 leading-tight tracking-widest uppercase">India Sports</div>
             </div>
           </Link>
